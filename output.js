@@ -31,11 +31,33 @@ document.addEventListener('DOMContentLoaded', async () => {
 function displayGuidance(guidance) {
   const outputDiv = document.getElementById('guidanceOutput');
   
-  // Format the guidance text
-  const formatted = guidance
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/\n/g, '<br>');
+  // Clear previous content
+  outputDiv.innerHTML = '';
   
-  outputDiv.innerHTML = `<p>${formatted}</p>`;
+  // Create container for typewriter effect
+  const textContainer = document.createElement('div');
+  textContainer.style.cssText = 'line-height: 1.8; font-size: 16px; color: #333; white-space: pre-wrap;';
+  outputDiv.appendChild(textContainer);
+  
+  // The guidance text
+  const fullText = guidance || '';
+  
+  // Typewriter effect
+  let charIndex = 0;
+  const typingSpeed = 15; // milliseconds per character
+  
+  function typeNextChar() {
+    if (charIndex < fullText.length) {
+      textContainer.textContent += fullText.charAt(charIndex);
+      charIndex++;
+      
+      // Auto-scroll to show new content
+      textContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      
+      setTimeout(typeNextChar, typingSpeed);
+    }
+  }
+  
+  // Start typing animation
+  typeNextChar();
 }

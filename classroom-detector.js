@@ -38,49 +38,145 @@ function extractAssignmentInfo() {
     assignmentInfo.courseId = urlParams.courseId;
     assignmentInfo.assignmentId = urlParams.assignmentId;
     
-    // Extract title
-    const titleElement = document.querySelector('[data-item-id] h1, .YVvGBb, .tLDEHd, h1.tLDEHd, .zyiB1c');
-    if (titleElement) {
-      assignmentInfo.title = titleElement.textContent.trim();
-    }
+    // Extract title - SMART approach (avoid navigation text)
+    let foundTitle = null;
+    const excludeWords = ['home', 'stream', 'classwork', 'people', 'grades', 'calendar'];
     
-    // Extract description/instructions - try multiple approaches
-    const descriptionSelectors = [
-      '.aVnDHd', // Main content area
-      '.ULPnae', // Instructions
-      '.IqJTee', // Question content
-      '.yJb0De', // Assignment body
-      '[data-description]',
-      '.description',
-      '.assignment-description',
-      'div[role="article"]',
-      '.Qwp0Ld' // Material content
-    ];
+    // Method 1: Get ALL h1 elements and filter out navigation
+    const allH1s = document.querySelectorAll('h1');
+    console.log('🔍 Found h1 elements:', allH1s.length);
     
-    let fullDescription = '';
-    
-    for (const selector of descriptionSelectors) {
-      const element = document.querySelector(selector);
-      if (element && element.textContent.trim()) {
-        const text = element.textContent.trim();
-        if (text.length > fullDescription.length) {
-          fullDescription = text;
+    for (const h1 of allH1s) {
+      const text = h1.textContent.trim();
+      console.log('  → h1 text:', text);
+      
+      // Skip if it's a navigation word or too short
+      if (text && text.length > 3 && text.length < 200) {
+        const lowerText = text.toLowerCase();
+        const isNavigation = excludeWords.some(word => lowerText === word || lowerText.includes(word));
+        
+        if (!isNavigation) {
+          foundTitle = text;
+          console.log(`✅ Title found (filtered):`, foundTitle);
+          break;
+        } else {
+          console.log(`  ❌ Skipped navigation text:`, text);
         }
       }
     }
     
-    // Also try to get all text content from the main assignment area
-    const mainContent = document.querySelector('.VBEdtc, .JYIJMc, .NHBuMc');
-    if (mainContent) {
-      const allText = mainContent.textContent.trim();
-      if (allText.length > fullDescription.length) {
-        fullDescription = allText;
+    // Method 2: Try specific assignment title selectors
+    if (!foundTitle) {
+      const titleSelectors = [
+        'div[role="main"] h1:not(:first-child)', // Not the first h1 (likely navigation)
+        '[data-item-id] h1',
+        '.YVvGBb',
+        '.tLDEHd'
+      ];
+      
+      for (const selector of titleSelectors) {
+        const element = document.querySelector(selector);
+        if (element && element.textContent.trim()) {
+          foundTitle = element.textContent.trim();
+          console.log(`✅ Title found via ${selector}:`, foundTitle);
+          break;
+        }
+      }
+    }
+    
+    // Method 3: Use page title as last resort
+    if (!foundTitle && document.title && !document.title.includes('Google Classroom')) {
+      foundTitle = document.title.split(' - ')[0].trim();
+      console.log('✅ Title found from page title:', foundTitle);
+    }
+    
+    assignmentInfo.title = foundTitle || 'Untitled Assignment';
+    
+    // Extract description/instructions - NUCLEAR approach
+    let fullDescription = '';
+    let foundMethod = 'none';
+    
+    // Method 1: Try guidedHelpId attribute
+    const instructionsElement = document.querySelector('[guidedHelpId="assignmentInstructionsGH"]');
+    if (instructionsElement) {
+      const text = instructionsElement.textContent.trim();
+      if (text.length > 100) {
+        fullDescription = text;
+        foundMethod = 'guidedHelpId';
+        console.log(`✅ Description found via guidedHelpId: ${text.length} chars`);
+      }
+    }
+    
+    // Method 2: Try role="main" for main content
+    if (!fullDescription) {
+      const mainElement = document.querySelector('div[role="main"]');
+      if (mainElement) {
+        const clonedMain = mainElement.cloneNode(true);
+        // Remove navigation, headers, and sidebars
+        const removeSelectors = 'nav, header, aside, [role="navigation"], [role="banner"], [role="complementary"]';
+        const elementsToRemove = clonedMain.querySelectorAll(removeSelectors);
+        elementsToRemove.forEach(el => el.remove());
+        
+        const text = clonedMain.textContent.trim();
+        if (text.length > 100) {
+          fullDescription = text;
+          foundMethod = 'role=main';
+          console.log(`✅ Description found via role="main": ${text.length} chars`);
+        }
+      }
+    }
+    
+    // Method 3: Try all possible class selectors
+    const descriptionSelectors = [
+      '[guidedHelpId*="instruction"]',
+      '[data-description]',
+      'div[role="article"]',
+      '.aVnDHd', '.ULPnae', '.IqJTee', '.yJb0De',
+      '.Qwp0Ld', '.VBEdtc', '.JYIJMc', '.NHBuMc',
+      '.description', '.assignment-description', '.instructions'
+    ];
+    
+    if (!fullDescription) {
+      for (const selector of descriptionSelectors) {
+        const element = document.querySelector(selector);
+        if (element) {
+          const text = element.textContent.trim();
+          if (text.length > fullDescription.length && text.length > 100) {
+            fullDescription = text;
+            foundMethod = selector;
+            console.log(`✅ Description found via ${selector}: ${text.length} chars`);
+          }
+        }
+      }
+    }
+    
+    // Method 4: NUCLEAR - Get ALL text from body, then clean it
+    if (!fullDescription || fullDescription.length < 200) {
+      console.log('🚨 Using NUCLEAR option - extracting all body text');
+      const bodyClone = document.body.cloneNode(true);
+      
+      // Remove scripts, styles, and navigation
+      const removeSelectors = 'script, style, nav, header[role="banner"], aside, [role="navigation"], .sidebar, [class*="nav"], [class*="menu"], [class*="header"]';
+      const elementsToRemove = bodyClone.querySelectorAll(removeSelectors);
+      elementsToRemove.forEach(el => el.remove());
+      
+      const allText = bodyClone.textContent.trim();
+      // Clean up extra whitespace
+      const cleanedText = allText.replace(/\s+/g, ' ').trim();
+      
+      if (cleanedText.length > fullDescription.length) {
+        fullDescription = cleanedText;
+        foundMethod = 'NUCLEAR';
+        console.log(`✅ Description found via NUCLEAR option: ${cleanedText.length} chars`);
       }
     }
     
     if (fullDescription) {
       assignmentInfo.description = fullDescription;
       assignmentInfo.instructions = fullDescription;
+      console.log(`📝 Final description method: ${foundMethod}, length: ${fullDescription.length}`);
+    } else {
+      console.log('❌ NO DESCRIPTION FOUND AT ALL');
     }
     
     // Extract due date
@@ -109,16 +205,47 @@ function extractAssignmentInfo() {
       }
     }
     
-    // Extract attachments
-    const attachmentElements = document.querySelectorAll('.qjTEB, .attachment, [data-attachment]');
-    attachmentElements.forEach(element => {
-      const link = element.querySelector('a');
-      if (link) {
-        assignmentInfo.attachments.push({
-          name: element.textContent.trim(),
-          url: link.href
-        });
-      }
+    // Extract attachments - IMPROVED to find more attachment types
+    const attachmentSelectors = [
+      'a[href*="drive.google.com"]',
+      'a[href*="docs.google.com"]',
+      'a[href*=".pdf"]',
+      '.qjTEB a',
+      '.attachment a',
+      '[data-attachment] a',
+      '[role="link"][href*="drive"]',
+      '[role="link"][href*="docs"]'
+    ];
+    
+    const attachmentLinks = new Set();
+    
+    attachmentSelectors.forEach(selector => {
+      const elements = document.querySelectorAll(selector);
+      elements.forEach(element => {
+        const href = element.href;
+        const text = element.textContent.trim();
+        
+        // Only add if it looks like a document/file
+        if (href && text && (
+          href.includes('drive.google.com') ||
+          href.includes('docs.google.com') ||
+          href.includes('.pdf') ||
+          text.toLowerCase().includes('pdf') ||
+          text.toLowerCase().includes('doc')
+        )) {
+          attachmentLinks.add(JSON.stringify({
+            name: text || 'Attachment',
+            url: href
+          }));
+        }
+      });
+    });
+    
+    assignmentInfo.attachments = Array.from(attachmentLinks).map(str => JSON.parse(str));
+    
+    console.log(`📎 Found ${assignmentInfo.attachments.length} attachment(s)`);
+    assignmentInfo.attachments.forEach(att => {
+      console.log(`  → ${att.name}: ${att.url}`);
     });
     
     // Extract questions (for quiz-type assignments)
@@ -284,31 +411,57 @@ if (typeof chrome !== 'undefined' && chrome.storage) {
   
   async function detectAndSave() {
     if (isGoogleClassroomAssignment()) {
-      // Wait a bit for page to fully load
-      setTimeout(async () => {
+      // Wait for page to fully load, then try multiple times
+      const maxAttempts = 3;
+      let attempt = 0;
+      
+      const tryExtract = async () => {
+        attempt++;
+        console.log(`🔍 Detection attempt ${attempt}/${maxAttempts}...`);
+        
         try {
           const assignmentInfo = extractAssignmentInfo();
-          if (assignmentInfo && assignmentInfo.title) {
-            // Debug logging
-            console.log('📚 Assignment detected:', assignmentInfo.title);
-            console.log('📄 Description length:', assignmentInfo.description?.length || 0);
+          console.log('📍 URL:', window.location.href);
+          console.log('📚 Title found:', assignmentInfo?.title || 'NO TITLE');
+          console.log('📄 Description length:', assignmentInfo?.description?.length || 0);
+          console.log('📝 Description preview:', assignmentInfo?.description?.substring(0, 200) || 'NO DESCRIPTION');
+          
+          // Check if we got good data (not just "Home" and empty description)
+          const hasValidTitle = assignmentInfo?.title && 
+                                assignmentInfo.title !== 'Untitled Assignment' &&
+                                !['home', 'stream', 'classwork'].includes(assignmentInfo.title.toLowerCase());
+          const hasValidDescription = assignmentInfo?.description && assignmentInfo.description.length > 50;
+          
+          if (assignmentInfo && hasValidTitle && hasValidDescription) {
+            console.log('✅ Assignment detected:', assignmentInfo.title);
             console.log('📝 Full assignment info:', assignmentInfo);
             
-            // Check if chrome.storage is available
             if (chrome && chrome.storage && chrome.storage.local) {
               await chrome.storage.local.set({ currentAssignment: assignmentInfo });
-              console.log('✅ Assignment saved to storage');
+              console.log('💾 Assignment saved to storage');
             }
+          } else if (attempt < maxAttempts) {
+            console.log(`⏳ Incomplete data, retrying in 2 seconds... (attempt ${attempt}/${maxAttempts})`);
+            setTimeout(tryExtract, 2000);
           } else {
-            console.log('⚠️ Assignment info extraction failed - no title found');
+            console.log('⚠️ Max attempts reached. Data might be incomplete.');
+            console.log('🔍 Available h1 elements:', Array.from(document.querySelectorAll('h1')).map(h => h.textContent.trim()));
+            
+            // Save even if incomplete (better than nothing)
+            if (assignmentInfo && chrome && chrome.storage && chrome.storage.local) {
+              await chrome.storage.local.set({ currentAssignment: assignmentInfo });
+              console.log('💾 Partial data saved to storage');
+            }
           }
         } catch (error) {
-          // Silently ignore extension context errors (happens on reload)
           if (!error.message.includes('Extension context invalidated')) {
-            console.error('Error saving assignment:', error);
+            console.error('❌ Error saving assignment:', error);
           }
         }
-      }, 2000); // Increased wait time to 2 seconds
+      };
+      
+      // Start first attempt after initial delay
+      setTimeout(tryExtract, 2000);
     }
   }
 }

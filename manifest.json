@@ -10,7 +10,10 @@
   ],
   "host_permissions": [
     "https://classroom.google.com/*",
-    "http://localhost:3000/*"
+    "http://localhost:3000/*",
+    "https://drive.google.com/*",
+    "https://docs.google.com/*",
+    "https://*.googleusercontent.com/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -29,9 +32,10 @@
         "panel.html", 
         "teacher-dashboard.html",
         "classroom-detector.js",
-        "gemini-api.js"
+        "gemini-api.js",
+        "document-parser.js"
       ],
-      "matches": ["https://classroom.google.com/*"]
+      "matches": ["https://classroom.google.com/*", "<all_urls>"]
     }
   ],
   "action": {

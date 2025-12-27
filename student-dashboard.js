@@ -151,6 +151,43 @@ document.addEventListener('DOMContentLoaded', async () => {
           });
         }
         
+        // Parse and include attachments
+        if (currentAssignment.attachments && currentAssignment.attachments.length > 0) {
+          console.log(`📎 Parsing ${currentAssignment.attachments.length} attachment(s)...`);
+          
+          try {
+            // Parse attachments (load document-parser.js)
+            const script = document.createElement('script');
+            script.src = chrome.runtime.getURL('document-parser.js');
+            await new Promise((resolve, reject) => {
+              script.onload = resolve;
+              script.onerror = reject;
+              document.head.appendChild(script);
+            });
+            
+            // Parse all attachments
+            if (typeof parseAllAttachments === 'function') {
+              const parsedDocs = await parseAllAttachments(currentAssignment.attachments);
+              
+              // Add document content to context
+              const successfulDocs = parsedDocs.filter(doc => doc.content);
+              if (successfulDocs.length > 0) {
+                assignmentContext += `\n\nATTACHED DOCUMENTS (${successfulDocs.length}):`;
+                successfulDocs.forEach(doc => {
+                  assignmentContext += `\n\n--- ${doc.fileName} ---\n${doc.content.substring(0, 3000)}`; // Limit to 3000 chars per doc
+                  if (doc.content.length > 3000) {
+                    assignmentContext += '\n[... content truncated ...]';
+                  }
+                });
+                console.log(`✅ Included ${successfulDocs.length} document(s) in context`);
+              }
+            }
+          } catch (error) {
+            console.warn('⚠️ Could not parse attachments:', error);
+            // Continue without attachments
+          }
+        }
+        
         if (currentAssignment.dueDate) {
           assignmentContext += `\n\nDue: ${currentAssignment.dueDate}`;
         }

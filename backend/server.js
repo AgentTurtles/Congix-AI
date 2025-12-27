@@ -8,6 +8,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const pdfParse = require('pdf-parse');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -42,17 +43,16 @@ app.get('/health', (req, res) => {
 });
 
 /**
- * POST /api/guidance
- * Generate ethical AI guidance for student
+ * POST /api/generate
+ * Generic Gemini API endpoint
  */
-app.post('/api/guidance', async (req, res) => {
+app.post('/api/generate', async (req, res) => {
   try {
-    const { assignmentContext, studentThinking } = req.body;
+    const { prompt } = req.body;
 
-    // Validation
-    if (!studentThinking || studentThinking.trim().length < 20) {
+    if (!prompt || prompt.trim().length < 10) {
       return res.status(400).json({ 
-        error: 'Student thinking must be at least 20 characters' 
+        error: 'Prompt must be at least 10 characters' 
       });
     }
 
@@ -62,8 +62,7 @@ app.post('/api/guidance', async (req, res) => {
       });
     }
 
-    // Build prompt
-    const prompt = buildGuidancePrompt(assignmentContext, studentThinking);
+    console.log('📨 Received generate request, prompt length:', prompt.length);
 
     // Call Gemini API
     const response = await fetch(`${GEMINI_API_ENDPOINT}?key=${GEMINI_API_KEY}`, {
@@ -81,7 +80,104 @@ app.post('/api/guidance', async (req, res) => {
           temperature: 0.7,
           topK: 40,
           topP: 0.95,
-          maxOutputTokens: 1024,
+          maxOutputTokens: 8192
+        }
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.error('❌ Gemini API error:', error);
+      throw new Error(error.error?.message || 'API request failed');
+    }
+
+    const data = await response.json();
+
+    // Extract text from response
+    if (data.candidates && data.candidates.length > 0) {
+      const candidate = data.candidates[0];
+      
+      // Check for safety blocks or incomplete responses
+      if (candidate.finishReason && candidate.finishReason !== 'STOP') {
+        console.warn('⚠️ Response finished with reason:', candidate.finishReason);
+        if (candidate.finishReason === 'SAFETY') {
+          console.error('🛑 Response blocked by safety filters');
+        } else if (candidate.finishReason === 'MAX_TOKENS') {
+          console.warn('⚠️ Response truncated due to token limit');
+        }
+      }
+      
+      if (candidate.content && candidate.content.parts && candidate.content.parts.length > 0) {
+        const responseText = candidate.content.parts[0].text;
+        console.log('✅ Generated response, length:', responseText.length);
+        console.log('📊 Finish reason:', candidate.finishReason);
+        console.log('🔍 Response preview:', responseText.substring(0, 200) + '...');
+        
+        return res.json({ 
+          success: true,
+          response: responseText,
+          finishReason: candidate.finishReason,
+          timestamp: new Date().toISOString()
+        });
+      }
+    }
+
+    console.error('❌ No valid response from Gemini:', JSON.stringify(data, null, 2));
+    throw new Error('No response generated');
+
+  } catch (error) {
+    console.error('❌ Error generating response:', error);
+    res.status(500).json({ 
+      error: error.message || 'Failed to generate response' 
+    });
+  }
+});
+
+/**
+ * POST /api/guidance
+ * Generate ethical AI guidance for student
+ */
+app.post('/api/guidance', async (req, res) => {
+  try {
+    const { assignmentContext, studentThinking, prompt } = req.body;
+
+    // Use custom prompt if provided, otherwise build default prompt
+    const finalPrompt = prompt || buildGuidancePrompt(assignmentContext, studentThinking);
+
+    // Validation (only if no custom prompt)
+    if (!prompt && (!studentThinking || studentThinking.trim().length < 20)) {
+      return res.status(400).json({ 
+        error: 'Student thinking must be at least 20 characters' 
+      });
+    }
+
+    if (!GEMINI_API_KEY) {
+      return res.status(500).json({ 
+        error: 'API key not configured on server' 
+      });
+    }
+
+    console.log('📨 Received guidance request');
+    console.log('📚 Assignment context length:', assignmentContext?.length || 0);
+    console.log('💭 Student thinking length:', studentThinking?.length || 0);
+
+    // Call Gemini API
+    const response = await fetch(`${GEMINI_API_ENDPOINT}?key=${GEMINI_API_KEY}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{
+            text: finalPrompt
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.7,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 8192,
         },
         safetySettings: [
           {
@@ -131,6 +227,52 @@ app.post('/api/guidance', async (req, res) => {
     console.error('Error generating guidance:', error);
     res.status(500).json({ 
       error: error.message || 'Failed to generate guidance' 
+    });
+  }
+});
+
+/**
+ * POST /api/parse-pdf
+ * Parse PDF document and extract text
+ */
+app.post('/api/parse-pdf', async (req, res) => {
+  try {
+    const { url, fileName } = req.body;
+
+    if (!url) {
+      return res.status(400).json({ 
+        error: 'PDF URL is required' 
+      });
+    }
+
+    console.log('📄 Parsing PDF:', fileName || url);
+
+    // Fetch the PDF
+    const pdfResponse = await fetch(url);
+    if (!pdfResponse.ok) {
+      throw new Error('Failed to fetch PDF');
+    }
+
+    const pdfBuffer = Buffer.from(await pdfResponse.arrayBuffer());
+
+    // Parse PDF
+    const data = await pdfParse(pdfBuffer);
+
+    console.log('✅ PDF parsed successfully');
+    console.log('📊 Pages:', data.numpages);
+    console.log('📏 Text length:', data.text.length);
+
+    return res.json({
+      success: true,
+      content: data.text,
+      pages: data.numpages,
+      fileName: fileName || 'document.pdf'
+    });
+
+  } catch (error) {
+    console.error('❌ Error parsing PDF:', error);
+    res.status(500).json({ 
+      error: error.message || 'Failed to parse PDF' 
     });
   }
 });

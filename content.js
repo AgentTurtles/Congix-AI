@@ -424,15 +424,37 @@ function displayGuidance(guidance) {
   levelIndicator.textContent = `${guidance.level} support`;
   levelIndicator.className = `guidance-level level-${guidance.level}`;
   
-  // Display prompts
-  promptsContainer.innerHTML = guidance.prompts.map((prompt, index) => `
-    <div class="prompt-item">
-      <span class="prompt-number">${index + 1}</span>
-      <p>${prompt}</p>
-    </div>
-  `).join('');
-  
+  // Clear previous content
+  promptsContainer.innerHTML = '';
   responseSection.style.display = 'block';
+  
+  // Create a single container for the full response
+  const fullResponseDiv = document.createElement('div');
+  fullResponseDiv.className = 'ai-full-response';
+  fullResponseDiv.style.cssText = 'padding: 20px; line-height: 1.6; white-space: pre-wrap;';
+  promptsContainer.appendChild(fullResponseDiv);
+  
+  // Combine all prompts into one text (they're usually already one continuous response)
+  const fullText = guidance.prompts.join('\n\n');
+  
+  // Typewriter effect
+  let charIndex = 0;
+  const typingSpeed = 20; // milliseconds per character (faster = lower number)
+  
+  function typeNextChar() {
+    if (charIndex < fullText.length) {
+      fullResponseDiv.textContent += fullText.charAt(charIndex);
+      charIndex++;
+      
+      // Auto-scroll to bottom as text appears
+      fullResponseDiv.scrollTop = fullResponseDiv.scrollHeight;
+      
+      setTimeout(typeNextChar, typingSpeed);
+    }
+  }
+  
+  // Start typing animation
+  typeNextChar();
 }
 
 /**

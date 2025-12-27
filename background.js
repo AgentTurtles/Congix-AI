@@ -3,6 +3,34 @@
  * Handles message passing, data persistence, and coordination between components
  */
 
+// Backend configuration
+const BACKEND_URL = 'http://localhost:3000';
+
+/**
+ * Helper function to call backend API
+ */
+async function callBackendAPI(endpoint, data) {
+  try {
+    const response = await fetch(`${BACKEND_URL}${endpoint}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Backend request failed');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Backend API Error:', error);
+    throw error;
+  }
+}
+
 // Initialize extension on install
 chrome.runtime.onInstalled.addListener(() => {
   console.log('AI Classroom Extension installed');
@@ -124,10 +152,98 @@ async function getInteractions(assignmentId) {
 async function generateGuidedPrompt(context, reasoning) {
   const { assignmentType, subject, studentInput, currentStage } = context;
   
+  // Get the actual assignment context from storage
+  const { currentAssignment } = await chrome.storage.local.get('currentAssignment');
+  
+  let assignmentContext = '';
+  if (currentAssignment) {
+    assignmentContext = `
+ASSIGNMENT: ${currentAssignment.title || 'Untitled'}
+
+INSTRUCTIONS:
+${currentAssignment.description || currentAssignment.instructions || 'No specific instructions available'}
+
+${currentAssignment.dueDate ? `DUE DATE: ${currentAssignment.dueDate}` : ''}
+${currentAssignment.points ? `POINTS: ${currentAssignment.points}` : ''}
+`;
+    console.log('📚 Using assignment context:', currentAssignment.title);
+    console.log('📄 Description length:', currentAssignment.description?.length || 0);
+  } else {
+    console.warn('⚠️ No assignment context found in storage');
+    assignmentContext = 'ASSIGNMENT: Unable to detect assignment details. Provide general guidance.';
+  }
+  
   // Analyze the reasoning provided
   const reasoningQuality = analyzeReasoning(studentInput);
   
-  // Generate appropriate guidance based on quality
+  // Call Gemini API with the actual assignment context
+  try {
+    console.log('🤖 Calling AI with assignment context...');
+    console.log('📚 Assignment title:', currentAssignment?.title || 'None');
+    console.log('📝 Description length:', currentAssignment?.description?.length || 0);
+    
+    const prompt = `You are COGNIX AI, an ethical educational assistant. A student is working on an assignment and needs guidance.
+
+${assignmentContext}
+
+STUDENT'S THINKING SO FAR:
+${studentInput || reasoning}
+
+ETHICAL GUIDANCE PRINCIPLES:
+1. Guide, don't solve - provide hints and questions, not direct answers
+2. Build on student's existing reasoning
+3. Encourage critical thinking and problem-solving
+4. Point out gaps in understanding without filling them directly
+5. Suggest resources or approaches, not solutions
+6. Reference the actual assignment content when giving guidance
+
+Provide detailed, ethical Socratic guidance that helps the student learn and think deeper about THIS SPECIFIC ASSIGNMENT.
+
+Structure your response as follows:
+
+OBSERVATIONS:
+[What the student understood well and what they're working towards]
+
+QUESTIONS TO CONSIDER:
+[3-4 probing questions that guide their thinking about the specific assignment]
+
+SUGGESTIONS:
+[Specific approaches or concepts they should explore related to the assignment]
+
+NEXT STEPS:
+[What they should try thinking about or researching next]
+
+Be specific to the assignment content. Help them think deeper without giving away answers.`;
+
+    // Use the backend API to call Gemini
+    console.log('📡 Sending request to backend...');
+    const result = await callBackendAPI('/api/guidance', { 
+      assignmentContext: assignmentContext,
+      studentThinking: studentInput || reasoning,
+      prompt: prompt 
+    });
+    console.log('✅ Received response from backend:', result);
+    
+    if (result && (result.guidance || result.response)) {
+      const responseText = result.guidance || result.response;
+      console.log('📝 Full AI response:', responseText);
+      console.log('📏 Response length:', responseText.length);
+      
+      // Return the FULL response as a single prompt for typewriter effect
+      return {
+        type: reasoningQuality === 'strong' ? 'scaffold' : 'hint',
+        level: reasoningQuality === 'insufficient' ? 'low' : 'medium',
+        prompts: [responseText] // Single item with full text
+      };
+    } else {
+      console.error('❌ No response from backend');
+    }
+  } catch (error) {
+    console.error('❌ Error calling Gemini API:', error);
+    console.error('Error details:', error.message);
+  }
+  
+  // Fallback to generic prompts if API fails
   if (reasoningQuality === 'insufficient') {
     return {
       type: 'clarification',
