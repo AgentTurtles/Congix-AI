@@ -1,0 +1,50 @@
+{
+  "manifest_version": 3,
+  "name": "AI Classroom - Ethical AI Guidance",
+  "version": "1.0.0",
+  "description": "Ethical AI guidance platform for Google Classroom - helping students think first, receive guided support, and maintain transparency with teachers",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://classroom.google.com/*",
+    "http://localhost:3000/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://classroom.google.com/*"],
+      "js": ["classroom-detector.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "images/*", 
+        "panel.html", 
+        "teacher-dashboard.html",
+        "classroom-detector.js",
+        "gemini-api.js"
+      ],
+      "matches": ["https://classroom.google.com/*"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  }
+}

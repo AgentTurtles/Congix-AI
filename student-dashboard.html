@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COGNIX - Student Screen</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="auth-container" data-name="Student's Screen" data-node-id="12:90">
+    <!-- Background image -->
+    <div class="auth-background-image" data-node-id="12:91">
+      <img src="https://www.figma.com/api/mcp/asset/191ca648-4eb9-4686-82c8-edc4b0db41d1" alt="Background">
+    </div>
+    
+    <!-- Overlay -->
+    <div class="auth-overlay" data-node-id="12:92"></div>
+    
+    <!-- Top left icon -->
+    <div class="auth-top-icon" data-node-id="12:95">
+      <img src="https://www.figma.com/api/mcp/asset/0f8eb173-f5ae-473e-a7f0-be669b656220" alt="Icon">
+    </div>
+    
+    <!-- Hamburger menu -->
+    <button class="auth-hamburger-btn" id="hamburgerMenu" aria-label="Menu">
+      <div class="auth-hamburger" data-node-id="12:100" style="top: 8px;"></div>
+      <div class="auth-hamburger" data-node-id="12:101" style="top: 14px;"></div>
+      <div class="auth-hamburger" data-node-id="12:102" style="top: 20px;"></div>
+    </button>
+    
+    <!-- Navigation menu -->
+    <div class="auth-nav-menu" id="navMenu">
+      <a href="student-dashboard.html" class="nav-menu-item">Dashboard</a>
+      <a href="#" class="nav-menu-item" id="aboutLink">About</a>
+      <a href="#" class="nav-menu-item" id="helpLink">Help</a>
+      <div class="nav-menu-divider"></div>
+      <a href="#" class="nav-menu-item" id="logoutLink">Logout</a>
+    </div>
+    
+    <!-- COGNIX Title -->
+    <h1 class="auth-student-title" data-node-id="12:97">COGNIX</h1>
+    
+    <!-- Need Help text -->
+    <p class="student-help-title" data-node-id="12:107">Need Help With this Assignment?</p>
+    
+    <!-- Your thinking label -->
+    <p class="student-thinking-label" data-node-id="12:105">Your thinking</p>
+    
+    <!-- Text area for student input -->
+    <textarea id="studentThinking" class="student-textarea" data-node-id="12:106" placeholder="Start with your own reasoning. AI will guide you after."></textarea>
+    
+    <!-- Think With AI button -->
+    <button class="auth-submit-btn student-submit-btn" id="thinkWithAiBtn" data-node-id="11:76">
+      <span data-node-id="11:78">Think With AI</span>
+    </button>
+    
+    <!-- Assignment status indicator (bottom, small) -->
+    <div id="assignmentStatus" style="position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); width: 320px; padding: 6px 10px; background: rgba(102, 126, 234, 0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 4px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 10px; color: #667eea; text-align: center; display: none; cursor: pointer;" onclick="refreshAssignment()">
+      <span id="statusIcon">📚</span> <span id="statusText">No assignment detected</span>
+      <span style="font-size: 9px; opacity: 0.7; margin-left: 8px;">(click to refresh)</span>
+    </div>
+  </div>
+  
+  <script src="auth.js"></script>
+  <script src="classroom-detector.js"></script>
+  <script src="student-dashboard.js"></script>
+</body>
+</html>

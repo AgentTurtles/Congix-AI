@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COGNIX AI - Get Started</title>
+  <link href="https://fonts.cdnfonts.com/css/ruigslay" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 450px;
+      height: 600px;
+      overflow: hidden;
+    }
+    .starting-screen {
+      position: relative;
+      width: 450px;
+      height: 600px;
+      background: white;
+      overflow: hidden;
+    }
+    .bg-image {
+      position: absolute;
+      width: 750px;
+      height: 600px;
+      left: 0;
+      top: 0;
+      pointer-events: none;
+    }
+    .bg-overlay {
+      position: absolute;
+      width: 449px;
+      height: 600px;
+      left: 1px;
+      top: 0;
+      background: rgba(217, 217, 217, 0.71);
+    }
+    .hamburger-menu {
+      position: absolute;
+      left: 421px;
+      width: 11px;
+      height: 2px;
+      z-index: 11;
+    }
+    .hamburger-1 { top: 23px; }
+    .hamburger-2 { top: 27px; }
+    .hamburger-3 { top: 31px; }
+    .title {
+      position: absolute;
+      left: calc(50% - 125px);
+      top: 220px;
+      width: 250px;
+      font-family: 'Ruigslay', Georgia, serif;
+      font-size: 48px;
+      font-weight: 400;
+      color: black;
+      text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      white-space: pre-wrap;
+      margin: 0;
+      z-index: 10;
+    }
+    .subtitle {
+      position: absolute;
+      left: calc(50% + 1px);
+      top: 275px;
+      width: 228px;
+      transform: translateX(-50%);
+      font-family: 'Ruigslay', Georgia, serif;
+      font-size: 20px;
+      color: #282828;
+      text-align: center;
+      margin: 0;
+      z-index: 10;
+    }
+    .get-started-btn {
+      position: absolute;
+      left: calc(50% - 78.5px);
+      top: 345px;
+      width: 157px;
+      height: 29px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border: none;
+      cursor: pointer;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 600;
+      font-size: 11px;
+      color: black;
+      z-index: 10;
+    }
+    .signin-text {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 385px;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 11px !important;
+      font-weight: 500 !important;
+      color: black;
+      margin: 0;
+      z-index: 10;
+      text-align: center;
+      width: 200px;
+    }
+    .signin-link {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 401px;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      color: #667eea;
+      cursor: pointer;
+      text-decoration: underline;
+      z-index: 10;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="starting-screen">
+    <img src="https://www.figma.com/api/mcp/asset/a9808af1-5ea9-4270-b988-2da3a98bed9f" alt="" class="bg-image">
+    <div class="bg-overlay"></div>
+    
+    <img src="https://www.figma.com/api/mcp/asset/57c75c88-e3d3-43f8-815b-2e39f78e4fd8" alt="" class="hamburger-menu hamburger-1">
+    <img src="https://www.figma.com/api/mcp/asset/57c75c88-e3d3-43f8-815b-2e39f78e4fd8" alt="" class="hamburger-menu hamburger-2">
+    <img src="https://www.figma.com/api/mcp/asset/57c75c88-e3d3-43f8-815b-2e39f78e4fd8" alt="" class="hamburger-menu hamburger-3">
+    
+    <p class="title">COGNIX AI</p>
+    <p class="subtitle">"Reimagining the future of education"</p>
+    
+    <button class="get-started-btn" id="getStartedBtn">Get Started!</button>
+    
+    <p class="signin-text">Already have an account?</p>
+    <a href="#" class="signin-link" id="signinLink">Sign in</a>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

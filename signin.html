@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COGNIX - Sign In</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="auth-container" data-name="Log in" data-node-id="11:66">
+    <!-- Background image -->
+    <div class="auth-background-image" data-node-id="11:67">
+      <img src="https://www.figma.com/api/mcp/asset/775f8c9e-cf3d-4817-8dbb-acfe11f0e121" alt="Background">
+    </div>
+    
+    <!-- Overlay -->
+    <div class="auth-overlay" data-node-id="11:68"></div>
+    
+    <!-- Hamburger menu -->
+    <button class="auth-hamburger-btn" id="hamburgerMenu" aria-label="Menu">
+      <div class="auth-hamburger" data-node-id="11:80" style="top: 8px;"></div>
+      <div class="auth-hamburger" data-node-id="11:81" style="top: 14px;"></div>
+      <div class="auth-hamburger" data-node-id="11:82" style="top: 20px;"></div>
+    </button>
+    
+    <!-- Navigation menu -->
+    <div class="auth-nav-menu" id="navMenu">
+      <a href="auth.html" class="nav-menu-item">Home</a>
+      <a href="signin.html" class="nav-menu-item">Sign In</a>
+      <a href="signup.html" class="nav-menu-item">Sign Up</a>
+    </div>
+    
+    <!-- COGNIX Title -->
+    <h1 class="auth-signin-title" data-node-id="11:77">COGNIX</h1>
+    
+    <!-- Sign In Form -->
+    <form id="signinForm" class="auth-form">
+      <!-- Username -->
+      <label class="auth-label" data-node-id="11:71" for="signinUsername">Username</label>
+      <input type="text" id="signinUsername" class="auth-input auth-input-full" data-node-id="11:84" required>
+      
+      <!-- Password -->
+      <label class="auth-label" data-node-id="11:73" for="signinPassword">Password</label>
+      <input type="password" id="signinPassword" class="auth-input auth-input-full" data-node-id="11:86" required>
+      
+      <!-- Sign In button -->
+      <button type="submit" class="auth-submit-btn" data-node-id="12:129">
+        <span data-node-id="12:130">Sign In</span>
+      </button>
+    </form>
+    
+    <div class="auth-footer-signup">
+      <p class="auth-footer-text">Don't have an account?</p>
+      <a href="signup.html" class="auth-footer-link">Sign up</a>
+    </div>
+  </div>
+  
+  <script src="auth.js"></script>
+</body>
+</html>

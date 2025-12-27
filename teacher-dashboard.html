@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COGNIX - Teacher Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ai-teacher-dashboard">
+    <div class="figma-teacher-screen">
+      <!-- Background overlay -->
+      <div class="background-overlay"></div>
+      
+      <!-- Header with profile and menu -->
+      <div class="teacher-header">
+        <div class="profile-circle">
+          <div class="profile-image"></div>
+        </div>
+        <h1 class="cognix-title">COGNIX</h1>
+        <button class="auth-hamburger-btn" id="hamburgerMenu" aria-label="Menu">
+          <div class="auth-hamburger" style="top: 8px;"></div>
+          <div class="auth-hamburger" style="top: 14px;"></div>
+          <div class="auth-hamburger" style="top: 20px;"></div>
+        </button>
+        
+        <!-- Navigation menu -->
+        <div class="auth-nav-menu" id="navMenu">
+          <a href="teacher-dashboard.html" class="nav-menu-item">Dashboard</a>
+          <a href="#" class="nav-menu-item" id="aboutLink">About</a>
+          <a href="#" class="nav-menu-item" id="helpLink">Help</a>
+          <div class="nav-menu-divider"></div>
+          <a href="#" class="nav-menu-item" id="logoutLink">Logout</a>
+        </div>
+      </div>
+      
+      <!-- Dashboard Title -->
+      <h2 class="dashboard-title">Dashboard</h2>
+      
+      <!-- Grade With AI Card -->
+      <div class="grade-with-ai-card">
+        <div class="card-inner">
+          <h3 class="card-title">Grade With AI</h3>
+          
+          <div class="student-table">
+            <!-- Table Header -->
+            <div class="table-header">
+              <div class="header-names">Names</div>
+              <div class="header-usage">AI Usage</div>
+            </div>
+            <div class="table-divider"></div>
+            
+            <!-- Student Rows -->
+            <div class="student-rows" id="studentList">
+              <!-- Students will be loaded dynamically -->
+              <div class="student-row">
+                <div class="student-name">Loading students...</div>
+                <div class="ai-usage-dot green"></div>
+              </div>
+            </div>
+            
+            <!-- See More Button -->
+            <button class="see-more-button" id="seeMoreBtn">See More</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Assignment Feedback Section -->
+      <h2 class="feedback-title">Assignment Feedback</h2>
+      <div class="feedback-card">
+        <div class="feedback-content">
+          <p class="placeholder-text">No assignments yet</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="auth.js"></script>
+  <script>
+    // Load teacher information and dashboard data
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const result = await storage.get(['cognixUser', 'cognixStatus']);
+        
+        if (!result.cognixUser || result.cognixStatus !== 'teacher') {
+          window.location.href = 'auth.html';
+          return;
+        }
+        
+        // Load sample students (replace with actual data later)
+        loadStudents();
+        
+      } catch (error) {
+        console.error('Error loading teacher dashboard:', error);
+      }
+      
+      // See More button functionality
+      document.getElementById('seeMoreBtn').addEventListener('click', () => {
+        alert('Full student list coming soon!');
+      });
+    });
+    
+    // Load students into the table
+    function loadStudents() {
+      const studentList = document.getElementById('studentList');
+      
+      // Sample student data (replace with actual data later)
+      const students = [
+        { name: 'John Smith', usage: 'green' },
+        { name: 'Emma Wilson', usage: 'yellow' },
+        { name: 'Michael Brown', usage: 'green' },
+        { name: 'Sarah Davis', usage: 'red' }
+      ];
+      
+      studentList.innerHTML = students.map((student, index) => `
+        <div class="student-row" onclick="viewStudentDetails('${student.name}')">
+          <div class="student-name">${student.name}</div>
+          <div class="ai-usage-dot ${student.usage}"></div>
+        </div>
+        ${index < students.length - 1 ? '<div class="row-divider"></div>' : ''}
+      `).join('');
+    }
+    
+    // View student details
+    function viewStudentDetails(studentName) {
+      alert(`Viewing details for: ${studentName}\n\nDetailed analytics coming soon!`);
+    }
+  </script>
+</body>
+</html>

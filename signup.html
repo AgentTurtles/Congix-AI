@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COGNIX - Sign Up</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="auth-container" data-name="Sign Up" data-node-id="10:39">
+    <!-- Background image -->
+    <div class="auth-background-image" data-node-id="10:40">
+      <img src="https://www.figma.com/api/mcp/asset/60c97b87-ae59-46ee-a256-8e95d27cfefd" alt="Background">
+    </div>
+    
+    <!-- Overlay -->
+    <div class="auth-overlay" data-node-id="10:41"></div>
+    
+    <!-- Top left icon -->
+    <div class="auth-top-icon" data-node-id="10:42">
+      <img src="https://www.figma.com/api/mcp/asset/c639e638-d831-4f81-80a8-0b9ed86e49f4" alt="Icon">
+    </div>
+    
+    <!-- Back button -->
+    <button class="auth-back-button" id="backButton" aria-label="Go back">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+    </button>
+    
+    <!-- Hamburger menu -->
+    <button class="auth-hamburger-btn" id="hamburgerMenu" aria-label="Menu">
+      <div class="auth-hamburger" data-node-id="10:49" style="top: 8px;"></div>
+      <div class="auth-hamburger" data-node-id="10:50" style="top: 14px;"></div>
+      <div class="auth-hamburger" data-node-id="10:51" style="top: 20px;"></div>
+    </button>
+    
+    <!-- Navigation menu -->
+    <div class="auth-nav-menu" id="navMenu">
+      <a href="auth.html" class="nav-menu-item">Home</a>
+      <a href="signin.html" class="nav-menu-item">Sign In</a>
+      <a href="signup.html" class="nav-menu-item">Sign Up</a>
+    </div>
+    
+    <!-- COGNIX Title -->
+    <h1 class="auth-signup-title" data-node-id="10:44">COGNIX</h1>
+    
+    <!-- Sign Up Form -->
+    <form id="signupForm" class="auth-form">
+      <!-- First Name -->
+      <label class="auth-label" data-node-id="10:52" for="firstName">First Name</label>
+      <input type="text" id="firstName" class="auth-input auth-input-half-left" data-node-id="10:59" required>
+      
+      <!-- Last Name -->
+      <label class="auth-label auth-label-right" data-node-id="10:53" for="lastName">Last Name</label>
+      <input type="text" id="lastName" class="auth-input auth-input-half-right" data-node-id="10:60" required>
+      
+      <!-- Username -->
+      <label class="auth-label" data-node-id="10:54" for="username">Username</label>
+      <input type="text" id="username" class="auth-input auth-input-full" data-node-id="10:62" required>
+      
+      <!-- Email Address -->
+      <label class="auth-label" data-node-id="10:55" for="email">Email Adress</label>
+      <input type="email" id="email" class="auth-input auth-input-full" data-node-id="10:63" required>
+      
+      <!-- Password -->
+      <label class="auth-label" data-node-id="10:56" for="password">Password</label>
+      <input type="password" id="password" class="auth-input auth-input-full" data-node-id="10:64" required>
+      
+      <!-- Confirm Password -->
+      <label class="auth-label" data-node-id="10:57" for="confirmPassword">Confirm Password</label>
+      <input type="password" id="confirmPassword" class="auth-input auth-input-full" data-node-id="10:65" required>
+      
+      <!-- Status selection -->
+      <p class="auth-label" data-node-id="13:135">Status:</p>
+      <div class="auth-status-selector">
+        <button type="button" class="auth-status-btn auth-status-teacher" id="teacherBtn" data-node-id="13:131">
+          <span data-node-id="13:133">Teacher</span>
+        </button>
+        <button type="button" class="auth-status-btn auth-status-student" id="studentBtn" data-node-id="13:132">
+          <span data-node-id="13:134">Student</span>
+        </button>
+      </div>
+      
+      <!-- Sign Up button -->
+      <button type="submit" class="auth-submit-btn" data-node-id="10:43">
+        <span data-node-id="10:45">Sign Up</span>
+      </button>
+    </form>
+  </div>
+  
+  <script src="auth.js"></script>
+</body>
+</html>
