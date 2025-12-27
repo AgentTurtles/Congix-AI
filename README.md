@@ -1,292 +1,161 @@
-# AI Classroom - Ethical AI Guidance Extension
+# COGNIX
 
-![AI Classroom Logo](images/icon128.png)
+### AI-Powered Learning Assistant for Google Classroom
 
-## 🎓 Overview
-
-**AI Classroom** is a Chrome extension that integrates seamlessly into Google Classroom to promote ethical AI use in education. It's a **guidance platform, not a generative tool** — designed to help students think critically while receiving scaffolded support, and to give teachers complete transparency into AI-assisted learning.
-
-### Core Philosophy
-
-- **Think First, Then Ask** - Students must provide reasoning before receiving AI guidance
-- **Guidance, Not Answers** - AI provides hints, questions, and scaffolding, never complete solutions
-- **Transparency Above All** - Full visibility into AI interactions for both students and teachers
-- **Privacy by Design** - Minimal data collection, no surveillance, student autonomy preserved
-
-## ✨ Features
-
-### For Students
-
-#### 🤖 Guided AI Panel
-- **Context-Aware Activation** - Appears only when viewing assignments in Google Classroom
-- **Collapsible Interface** - Slides in from the side without obstructing original content
-- **Reasoning-First Approach** - Requires 50+ character explanation before AI assistance
-- **Adaptive Support Levels**:
-  - **Low** - Verification and encouragement
-  - **Medium** - Hints and clarifying questions
-  - **High** - Scaffolded step-by-step guidance
-
-#### 📊 Visual Usage Tracking
-- Real-time dots showing interaction history
-- Color-coded by guidance level (green/yellow/red)
-- Helps students self-monitor AI dependency
-
-#### 🔍 Transparency Summary
-- Automatic generation upon submission
-- Detailed breakdown of AI assistance level
-- Required student reflection on learning impact
-- Embedded with submission for teacher review
-
-### For Teachers
-
-#### 📈 Teacher Dashboard
-Based on the Figma design with **COGNIX** branding, featuring:
-
-- **Grade With AI** section showing:
-  - Student names with AI usage indicators (colored dots)
-  - Quick visual assessment of assistance levels
-  - Click-through to detailed insights
-
-- **Student Insight View**:
-  - AI Assistance Level (None/Low/Medium/High)
-  - Reasoning Quality Assessment
-  - Independence Indicator (percentage-based)
-  - Flagged Areas requiring attention
-  - Student reflection quotes
-  - AI-drafted feedback suggestions
-
-#### 🎯 Assignment Feedback
-- Aggregated classroom insights
-- Common misconceptions identification
-- AI usage trends across students
-- Suggested instructional adjustments
-
-#### ⚙️ Teacher Control
-- Full ability to edit/approve/discard AI suggestions
-- No punitive detection algorithms
-- Human judgment remains central to assessment
-
-## 🏗️ Technical Architecture
-
-### File Structure
-
-```
-ai-classroom-extension/
-├── manifest.json           # Extension configuration
-├── background.js          # Service worker for data handling
-├── content.js            # Main content script for Google Classroom
-├── styles.css            # All extension styling
-├── popup.html            # Extension popup interface
-├── popup.js              # Popup functionality
-├── images/               # Extension icons and assets
-│   ├── icon16.png
-│   ├── icon48.png
-│   └── icon128.png
-└── README.md             # This file
-```
-
-### Key Components
-
-#### Background Service Worker (`background.js`)
-- Message passing coordinator
-- Privacy-preserving interaction storage
-- AI guidance generation logic
-- Transparency summary generation
-- Teacher insights calculation
-
-#### Content Script (`content.js`)
-- Context detection (student vs teacher view)
-- Dynamic UI injection
-- Session management
-- Submission interception
-- Real-time interaction tracking
-
-#### Styles (`styles.css`)
-- Figma design implementation
-- Responsive layout
-- Smooth animations
-- Accessibility considerations
-
-## 🚀 Installation
-
-### For Development
-
-1. **Clone or download this repository**
-
-2. **Open Chrome and navigate to:**
-   ```
-   chrome://extensions/
-   ```
-
-3. **Enable Developer Mode** (toggle in top right)
-
-4. **Click "Load unpacked"**
-
-5. **Select the extension directory**
-
-6. **Navigate to Google Classroom** to see it in action!
-
-### For Production
-
-1. Package the extension:
-   ```bash
-   zip -r ai-classroom-extension.zip * -x "*.git*" "README.md"
-   ```
-
-2. Upload to Chrome Web Store Developer Dashboard
-
-3. Follow Chrome Web Store publishing guidelines
-
-## 🎨 Design Implementation
-
-The extension implements the Figma design specifications:
-
-- **COGNIX branding** with custom typography
-- **Teacher Dashboard** with student AI usage table
-- **Color-coded indicators**:
-  - 🟢 Green - Low AI usage (independent work)
-  - 🟡 Yellow - Medium AI usage (balanced support)
-  - 🔴 Red - High AI usage (significant guidance)
-- **Clean, professional interface** matching Google Classroom aesthetics
-- **Smooth animations** for panel transitions
-
-## 🔒 Privacy & Ethics
-
-### Data Collection
-- **Minimal**: Only interaction metadata (type, level, stage, timestamp)
-- **No Full Conversations**: Student inputs and AI responses not stored long-term
-- **Hashed Identifiers**: Student IDs anonymized for storage
-- **Local First**: Data stored locally in browser, not transmitted to external servers
-
-### Ethical Principles
-1. **Student Autonomy** - Students choose when to engage
-2. **No Surveillance** - Extension only active in assignment contexts
-3. **Transparency** - Clear communication about what data is tracked
-4. **Non-Punitive** - Designed to support learning, not catch cheating
-5. **Human-Centered** - Teachers maintain final decision-making authority
-
-## 🛠️ Customization
-
-### Adjusting Guidance Levels
-
-Edit the `generateGuidedPrompt()` function in `background.js`:
-
-```javascript
-async function generateGuidedPrompt(context, reasoning) {
-  // Customize prompts based on your educational context
-  // Adjust thresholds for reasoning quality
-  // Add subject-specific guidance
-}
-```
-
-### Styling Modifications
-
-Edit `styles.css` to match your institution's branding:
-
-```css
-:root {
-  --primary-color: #141313;
-  --secondary-color: #f5f2f2;
-  /* Customize colors here */
-}
-```
-
-### Integration with AI Services
-
-For production deployment, replace the local guidance generation with API calls:
-
-```javascript
-async function generateGuidedPrompt(context, reasoning) {
-  const response = await fetch('YOUR_API_ENDPOINT', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ context, reasoning })
-  });
-  return response.json();
-}
-```
-
-## 🧪 Testing
-
-### Manual Testing Checklist
-
-**Student View:**
-- [ ] Panel appears on assignment pages
-- [ ] Panel collapsible/expandable
-- [ ] Reasoning input requires 50+ characters
-- [ ] Guidance prompts display correctly
-- [ ] Usage dots update in real-time
-- [ ] Transparency modal shows before submission
-- [ ] Reflection required before submission
-
-**Teacher View:**
-- [ ] Dashboard appears on grading pages
-- [ ] Student list shows AI usage indicators
-- [ ] Clicking student shows detailed insights
-- [ ] Insights modal displays correctly
-- [ ] Color coding matches usage levels
-
-### Browser Compatibility
-- Chrome 88+
-- Edge 88+
-- Brave (Chromium-based)
-
-## 📊 Usage Analytics (Optional)
-
-For institutional deployment, consider integrating with learning analytics platforms:
-
-```javascript
-// Example: Send anonymized data to learning analytics
-chrome.runtime.sendMessage({
-  action: 'logAnalytics',
-  event: 'guidance_requested',
-  metadata: { subject, level, stage }
-});
-```
-
-## 🤝 Contributing
-
-We welcome contributions! Areas for enhancement:
-
-- **Subject-specific guidance** (math, science, humanities)
-- **Multi-language support**
-- **Accessibility improvements**
-- **Integration with other LMS platforms** (Canvas, Moodle)
-- **Advanced NLP** for reasoning quality assessment
-- **Visualization improvements** for teacher dashboards
-
-## 📝 License
-
-This project is licensed under the MIT License - see LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- Design inspired by modern educational technology principles
-- Built with feedback from educators and students
-- Figma design system for visual consistency
-
-## 📧 Support
-
-For issues, questions, or feedback:
-- GitHub Issues: [Create an issue](https://github.com/yourusername/ai-classroom-extension/issues)
-- Email: support@aiclassroom.edu
-- Documentation: [Full docs](https://docs.aiclassroom.edu)
-
-## 🔮 Future Roadmap
-
-- [ ] Integration with popular AI APIs (OpenAI, Anthropic)
-- [ ] Offline mode with cached guidance patterns
-- [ ] Mobile support for Google Classroom app
-- [ ] Integration with plagiarism detection tools
-- [ ] Real-time collaboration features
-- [ ] Parent/guardian insight dashboard
-- [ ] Multilingual interface and guidance
-- [ ] Advanced analytics and reporting
-- [ ] Gamification elements for student engagement
-- [ ] Professional development resources for teachers
+![COGNIX Dashboard](images/Screenshot%202025-12-27%20220748.png)
 
 ---
 
-**Built with ❤️ for ethical AI education**
+##  Overview
 
-*Empowering students to think critically while leveraging AI as a learning partner*
+**COGNIX** is a Chrome extension that seamlessly integrates with Google Classroom to provide intelligent, AI-powered assistance for students and comprehensive insights for teachers. Powered by Google's Gemini API, COGNIX transforms the traditional classroom experience into an interactive, personalized learning environment.
+
+## Key Features
+
+### For Students
+-  **AI-Powered Guidance** - Get contextual help and hints on assignments in real-time
+-  **Smart Assignment Detection** - Automatically identifies and extracts assignment context
+-  **Personalized Learning** - Tailored assistance based on your specific questions and needs
+-  **Privacy First** - Your data stays secure with server-side API management
+
+### For Teachers
+-  **Teacher Dashboard** - Monitor student progress and AI usage patterns
+-  **Student Insights** - View detailed analytics on how students engage with AI assistance
+-  **Assignment Analytics** - Track classroom-wide trends and learning outcomes
+-  **Transparency Reports** - Complete visibility into AI assistance provided to students
+
+##  Architecture
+
+### Technical Stack
+- **Frontend:** Vanilla JavaScript, HTML5, CSS3
+- **Backend:** Node.js with Express
+- **AI Engine:** Google Gemini API
+- **Chrome APIs:** Storage, Messaging, Tabs
+
+### Project Structure
+```
+├── manifest.json              # Extension configuration
+├── background.js             # Service worker & message handling
+├── content.js               # Google Classroom integration
+├── popup.html/js            # Extension popup interface
+├── student-dashboard.html/js # Student dashboard
+├── teacher-dashboard.html    # Teacher analytics dashboard
+├── auth.html/js             # Authentication system
+├── gemini-api.js            # AI integration layer
+├── classroom-detector.js    # Assignment context extraction
+├── styles.css               # Global styling
+├── backend/
+│   ├── server.js           # Express API server
+│   └── package.json        # Backend dependencies
+└── images/                 # Extension icons & assets
+```
+
+## Quick Start
+
+### Prerequisites
+- Node.js (v14 or higher)
+- Chrome browser
+- Google Gemini API key
+
+### Installation
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/yourusername/cognix.git
+cd cognix
+```
+
+2. **Set up the backend**
+```bash
+cd backend
+npm install
+```
+
+3. **Configure environment variables**
+```bash
+# Create .env file in backend folder
+echo "GEMINI_API_KEY=your_api_key_here" > .env
+echo "PORT=3000" >> .env
+echo "ALLOWED_ORIGINS=*" >> .env
+```
+
+4. **Start the backend server**
+```bash
+npm start
+```
+
+5. **Load the extension in Chrome**
+   - Open Chrome and go to `chrome://extensions/`
+   - Enable "Developer mode"
+   - Click "Load unpacked"
+   - Select the project directory
+
+6. **Configure the extension**
+   - Click the COGNIX icon in Chrome
+   - Go to Settings
+   - Verify backend URL is `http://localhost:3000`
+   - Click "Test Connection"
+
+##  Usage
+
+### Students
+1. Sign in to the extension
+2. Navigate to any Google Classroom assignment
+3. Click "Think With AI" to get personalized guidance
+4. Review your AI usage history in the student dashboard
+
+### Teachers
+1. Access the teacher dashboard from the extension popup
+2. View student AI usage patterns and insights
+3. Monitor learning progress and identify students who need help
+4. Generate transparency reports for assignments
+
+##  Security & Privacy
+
+- ✅ API keys stored securely on the server (never in browser)
+- ✅ Rate limiting and request validation
+- ✅ CORS protection
+- ✅ User authentication and session management
+- ✅ Minimal data collection, maximum privacy
+
+##  Development
+
+### Backend Development
+```bash
+cd backend
+npm run dev  # Start with auto-reload
+```
+
+### Testing
+- Test the extension on Google Classroom assignments
+- Verify API connectivity through Settings
+- Check browser console for any errors
+
+## Contributing
+
+Contributions are welcome! Please follow these guidelines:
+- Fork the repository
+- Create a feature branch
+- Write clear commit messages
+- Test thoroughly before submitting PR
+- Update documentation as needed
+
+##  License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+##  Acknowledgments
+
+- Google Gemini API for AI capabilities
+- Google Classroom for the learning platform
+- All educators and students who provided feedback
+
+##  Support
+
+For questions, issues, or feedback:
+- Create an issue on GitHub
+- Email: shayanejaz2018@gmail.com
+
+---
+
+**Made with ❤️ for better learning experiences**
