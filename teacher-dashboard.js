@@ -1,5 +1,38 @@
 // Teacher Dashboard JavaScript
 
+// Fallback storage for testing outside Chrome extension
+const isChromeExtension = typeof chrome !== 'undefined' && chrome.storage;
+const storage = {
+  async get(keys) {
+    if (isChromeExtension) {
+      return chrome.storage.local.get(keys);
+    } else {
+      const result = {};
+      const keyArray = Array.isArray(keys) ? keys : [keys];
+      keyArray.forEach(key => {
+        const value = localStorage.getItem(key);
+        if (value) {
+          try {
+            result[key] = JSON.parse(value);
+          } catch {
+            result[key] = value;
+          }
+        }
+      });
+      return result;
+    }
+  },
+  async set(items) {
+    if (isChromeExtension) {
+      return chrome.storage.local.set(items);
+    } else {
+      Object.entries(items).forEach(([key, value]) => {
+        localStorage.setItem(key, JSON.stringify(value));
+      });
+    }
+  }
+};
+
 // ===== Toast Notification System =====
 function showToast(message, type = 'info', title = '') {
   const container = document.getElementById('toastContainer');
@@ -201,6 +234,24 @@ function initializeDashboard() {
     showToast('View all students with detailed analytics and AI usage patterns', 'info', 'Full Student List Coming Soon');
   });
   
+  // Hamburger menu handler
+  document.querySelector('.figma-hamburger-btn')?.addEventListener('click', () => {
+    const menu = document.querySelector('.figma-nav-menu');
+    if (menu) {
+      menu.classList.toggle('open');
+    }
+  });
+  
+  // Close menu when clicking navigation links
+  document.querySelectorAll('.figma-nav-menu .nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      const menu = document.querySelector('.figma-nav-menu');
+      if (menu) {
+        menu.classList.remove('open');
+      }
+    });
+  });
+  
   // Tab switching handlers
   document.getElementById('studentsTab')?.addEventListener('click', () => switchTab('students'));
   document.getElementById('insightsTab')?.addEventListener('click', () => switchTab('insights'));
@@ -311,56 +362,60 @@ function loadStudents() {
   
   // Comprehensive test student data
   const students = [
-    { name: 'Sarah Davis', usage: 'red', assignments: 5, gpa: 3.8, plagiarismRisk: 'none' },
-    { name: 'Marcus Thompson', usage: 'red', assignments: 4, gpa: 3.2, plagiarismRisk: 'moderate' },
-    { name: 'Emma Wilson', usage: 'yellow', assignments: 4, gpa: 3.9, plagiarismRisk: 'none' },
-    { name: 'James Johnson', usage: 'yellow', assignments: 3, gpa: 3.5, plagiarismRisk: 'none' },
-    { name: 'Sophia Chen', usage: 'yellow', assignments: 5, gpa: 3.7, plagiarismRisk: 'none' },
-    { name: 'John Smith', usage: 'green', assignments: 3, gpa: 3.6, plagiarismRisk: 'none' },
-    { name: 'Michael Brown', usage: 'green', assignments: 2, gpa: 3.4, plagiarismRisk: 'none' },
-    { name: 'Olivia Martinez', usage: 'green', assignments: 4, gpa: 4.0, plagiarismRisk: 'none' },
-    { name: 'Aiden Park', usage: 'green', assignments: 3, gpa: 3.8, plagiarismRisk: 'none' },
-    { name: 'Isabella Garcia', usage: 'yellow', assignments: 4, gpa: 3.6, plagiarismRisk: 'none' },
-    { name: 'Ethan Rodriguez', usage: 'red', assignments: 6, gpa: 3.1, plagiarismRisk: 'high' },
-    { name: 'Mia Anderson', usage: 'green', assignments: 2, gpa: 3.9, plagiarismRisk: 'none' },
-    { name: 'Noah Williams', usage: 'yellow', assignments: 5, gpa: 3.3, plagiarismRisk: 'none' },
-    { name: 'Ava Taylor', usage: 'green', assignments: 3, gpa: 3.7, plagiarismRisk: 'none' },
-    { name: 'Liam O\'Connor', usage: 'red', assignments: 4, gpa: 3.0, plagiarismRisk: 'high' }
+    { name: 'Sarah Davis', usage: 'high', assignments: 5, gpa: 3.8, plagiarismRisk: 'none' },
+    { name: 'Marcus Thompson', usage: 'high', assignments: 4, gpa: 3.2, plagiarismRisk: 'moderate' },
+    { name: 'Emma Wilson', usage: 'medium', assignments: 4, gpa: 3.9, plagiarismRisk: 'none' },
+    { name: 'James Johnson', usage: 'medium', assignments: 3, gpa: 3.5, plagiarismRisk: 'none' },
+    { name: 'Sophia Chen', usage: 'medium', assignments: 5, gpa: 3.7, plagiarismRisk: 'none' },
+    { name: 'John Smith', usage: 'low', assignments: 3, gpa: 3.6, plagiarismRisk: 'none' },
+    { name: 'Michael Brown', usage: 'low', assignments: 2, gpa: 3.4, plagiarismRisk: 'none' },
+    { name: 'Olivia Martinez', usage: 'low', assignments: 4, gpa: 4.0, plagiarismRisk: 'none' },
+    { name: 'Aiden Park', usage: 'low', assignments: 3, gpa: 3.8, plagiarismRisk: 'none' },
+    { name: 'Isabella Garcia', usage: 'medium', assignments: 4, gpa: 3.6, plagiarismRisk: 'none' },
+    { name: 'Ethan Rodriguez', usage: 'high', assignments: 6, gpa: 3.1, plagiarismRisk: 'high' },
+    { name: 'Mia Anderson', usage: 'low', assignments: 2, gpa: 3.9, plagiarismRisk: 'none' },
+    { name: 'Noah Williams', usage: 'medium', assignments: 5, gpa: 3.3, plagiarismRisk: 'none' },
+    { name: 'Ava Taylor', usage: 'low', assignments: 3, gpa: 3.7, plagiarismRisk: 'none' },
+    { name: 'Liam O\'Connor', usage: 'high', assignments: 4, gpa: 3.0, plagiarismRisk: 'high' }
   ];
   
   // Store globally for other functions
   window.testStudents = students;
   
+  // Update to Figma structure
   studentList.innerHTML = students.map((student, index) => `
-    <div class="teacher-student-row">
-      <span class="teacher-student-name">
+    <div class="figma-table-row">
+      <span class="figma-student-name">
         ${student.name}
         ${student.plagiarismRisk === 'moderate' ? '<span class="plagiarism-flag moderate" title="Moderate plagiarism risk (65%)">⚠️</span>' : ''}
         ${student.plagiarismRisk === 'high' ? '<span class="plagiarism-flag high" title="High plagiarism risk (85%)">🚩</span>' : ''}
       </span>
-      <div class="teacher-usage-wrapper">
-        <div class="teacher-usage-indicator ${student.usage}" title="${getUsageText(student.usage)}"></div>
-      </div>
+      <div class="figma-usage-indicator ${student.usage}" title="${getUsageText(student.usage)}"></div>
     </div>
-    ${index < students.length - 1 ? '<div class="teacher-row-divider"></div>' : ''}
   `).join('');
 }
 
 // Get usage text for tooltip
 function getUsageText(level) {
   const texts = {
-    green: 'Low AI Usage (Safe)',
-    yellow: 'Moderate AI Usage (Monitor)',
-    red: 'High AI Usage (Review)'
+    low: 'Low AI Usage (Safe)',
+    medium: 'Moderate AI Usage (Monitor)',
+    high: 'High AI Usage (Review)'
   };
   return texts[level] || 'Unknown';
 }
 
-// Update stats
+// Update stats in both Students and Insights views
 function updateStats() {
+  // Students view stats
   document.getElementById('totalStudents').textContent = '15';
-  document.getElementById('activeToday').textContent = '12';
-  document.getElementById('avgUsage').textContent = '42%';
+  document.getElementById('activeToday').textContent = '11';
+  document.getElementById('avgUsage').textContent = '41%';
+  
+  // Insights view stats (duplicate elements)
+  document.getElementById('totalStudentsInsights').textContent = '15';
+  document.getElementById('activeTodayInsights').textContent = '11';
+  document.getElementById('avgUsageInsights').textContent = '41%';
 }
 
 // View student details
@@ -614,15 +669,21 @@ function switchTab(tab) {
   const insightsView = document.getElementById('insightsView');
   
   if (tab === 'students') {
+    // Update tab buttons
     studentsTab.classList.add('active');
     insightsTab.classList.remove('active');
+    
+    // Show/hide views
     studentsView.classList.add('active');
     studentsView.style.display = 'block';
     insightsView.classList.remove('active');
     insightsView.style.display = 'none';
   } else if (tab === 'insights') {
+    // Update tab buttons
     insightsTab.classList.add('active');
     studentsTab.classList.remove('active');
+    
+    // Show/hide views
     insightsView.classList.add('active');
     insightsView.style.display = 'block';
     studentsView.classList.remove('active');
@@ -708,12 +769,6 @@ function useTemplate(type) {
   const templateId = type + 'Template';
   const template = document.getElementById(templateId).value;
   
-  // In a real implementation, this would:
-  // 1. Get the current student's data
-  // 2. Replace merge tags with actual values
-  // 3. Copy to clipboard or open in email client
-  
-  // For now, just show what it would do
   const currentStudent = document.querySelector('.teacher-student-card')?.dataset.name || 'Student Name';
   const currentUsage = document.querySelector('.teacher-student-card')?.dataset.usage || '0%';
   
@@ -779,8 +834,6 @@ async function analyzePatterns() {
       cognixPatterns: patterns,
       historicalUsageData: historicalData
     });
-    
-    console.log('Pattern analysis complete:', patterns);
     
     // Update UI with detected patterns
     updatePatternIndicators(patterns);
@@ -1032,15 +1085,6 @@ function updatePatternIndicators(patterns) {
       }
     }
   }
-  
-  // Log patterns for debugging
-  console.log('Pattern Recognition Results:', {
-    spikes: patterns.spikes.length,
-    consistentHigh: patterns.consistentHigh.length,
-    topAssignment: patterns.assignmentPatterns[0]?.assignmentType,
-    peakDay: patterns.timePatterns[0]?.day,
-    recommendations: patterns.recommendations.length
-  });
 }
 
 // ===== PROGRESS REPORTS GENERATOR =====
@@ -1163,14 +1207,8 @@ async function generateProgressReport() {
       });
     }
     
-    // Generate PDF (simulated - in production would use a library like jsPDF)
-    const pdfContent = generatePDFContent(reportData);
-    
     // Save report to storage
     await storage.set({ lastGeneratedReport: reportData });
-    
-    // Simulate download
-    console.log('Generated PDF Report:', reportData);
     
     // Show success
     setTimeout(() => {
@@ -1186,22 +1224,6 @@ async function generateProgressReport() {
     setButtonLoading(btn, false);
     showToast('Failed to generate report. Please try again.', 'error', 'Report Generation Failed');
   }
-}
-
-function generatePDFContent(reportData) {
-  // In production, this would use jsPDF or similar library
-  // For now, return formatted text content
-  let content = `${reportData.title}\n`;
-  content += `Generated: ${reportData.generatedAt}\n`;
-  content += `Period: ${reportData.dateRange.start} to ${reportData.dateRange.end}\n\n`;
-  
-  reportData.sections.forEach(section => {
-    content += `\n${section.title}\n`;
-    content += `${'='.repeat(section.title.length)}\n`;
-    content += JSON.stringify(section.data, null, 2) + '\n';
-  });
-  
-  return content;
 }
 
 // Event Listeners

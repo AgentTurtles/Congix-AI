@@ -1,5 +1,5 @@
 /* AI Classroom Extension Styles */
-/* Based on Figma design with COGNIX branding */
+/* Optimized and clean codebase */
 
 /* ===== Global Styles ===== */
 :root {
@@ -11,12 +11,32 @@
   --alert-red: #ff4444;
   --shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   --border-radius: 8px;
+  --font-primary: 'Bricolage Grotesque', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --transition-fast: 0.2s ease;
+  --transition-smooth: 0.3s ease;
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 450px;
+  height: 600px;
+  overflow: hidden;
+}
+
+/* Global font and transition optimization */
+body, button, input, textarea, select {
+  font-family: var(--font-primary);
+}
+
+button, a, .clickable {
+  transition: all var(--transition-fast);
 }
 
 /* ===== Student Panel Styles ===== */
@@ -555,7 +575,7 @@
 .teacher-dashboard-tabs {
   position: absolute;
   left: calc(50% - 100px);
-  top: 115px;
+  top: 100px;
   display: flex;
   gap: 8px;
   z-index: 20;
@@ -618,7 +638,7 @@
 .teacher-insights-card {
   position: absolute;
   left: calc(50% - 135.5px);
-  top: 150px;
+  top: 135px;
   width: 271px;
   z-index: 10;
 }
@@ -846,7 +866,7 @@
 .teacher-monitor-card {
   position: absolute;
   left: calc(50% - 135.5px);
-  top: 120px;
+  top: 135px;
   width: 271px;
   z-index: 10;
 }
@@ -1124,7 +1144,7 @@
 .teacher-assignment-card {
   position: absolute;
   left: calc(50% - 135.5px);
-  top: 370px;
+  top: 355px;
   width: 271px;
   height: auto;
   max-height: 280px;
@@ -5442,6 +5462,417 @@ input.error, select.error, textarea.error {
   }
   to {
     opacity: 1;
+  }
+}
+
+/* ========================================
+   FIGMA DESIGN IMPLEMENTATION
+   ======================================== */
+
+/* Main Container */
+.figma-dashboard-container {
+  position: relative;
+  width: 450px;
+  height: 600px;
+  background: white;
+  overflow: hidden;
+}
+
+/* Background Pattern */
+.figma-background-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 750px;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.figma-background-pattern img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 166.67%;
+  height: 100%;
+  object-fit: cover;
+  max-width: none;
+}
+
+/* Overlay */
+.figma-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(217, 217, 217, 0.71);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Header */
+.figma-header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 33px 23px 0 23px;
+}
+
+/* COGNIX Title */
+.figma-cognix-title {
+  font-family: 'Ruigslay', Georgia, serif;
+  font-size: 40px;
+  font-weight: normal;
+  color: black;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  margin: 0;
+  letter-spacing: 0.5px;
+  line-height: 1;
+}
+
+/* Hamburger Button */
+.figma-hamburger-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.figma-hamburger-line {
+  width: 15px;
+  height: 0;
+  border-top: 2px solid black;
+  transition: all 0.3s ease;
+}
+
+.figma-hamburger-btn:hover .figma-hamburger-line {
+  border-color: #2196F3;
+}
+
+/* Navigation Menu */
+.figma-nav-menu {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 280px;
+  height: 100%;
+  background: white;
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  transition: right 0.3s ease;
+  padding: 80px 24px 24px 24px;
+  overflow-y: auto;
+}
+
+.figma-nav-menu.open {
+  right: 0;
+}
+
+/* Dashboard Tabs */
+.figma-tabs-container {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  gap: 9px;
+  justify-content: center;
+  margin-top: 6px;
+  padding: 0 23px;
+}
+
+.figma-tab {
+  background: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 16px;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  color: black;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease;
+}
+
+.figma-tab svg {
+  stroke: currentColor;
+  opacity: 0.8;
+}
+
+.figma-tab:hover {
+  background: #f5f5f5;
+  transform: translateY(-1px);
+}
+
+.figma-tab.active {
+  background: #2196F3;
+  color: white;
+  font-weight: 500;
+}
+
+.figma-tab.active svg {
+  opacity: 1;
+}
+
+/* Views */
+.figma-view {
+  display: none;
+  position: relative;
+  z-index: 5;
+}
+
+.figma-view.active {
+  display: block;
+}
+
+/* Student's Report Card */
+.figma-report-card {
+  position: relative;
+  margin: 25px 27px 0 27px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  padding: 0;
+  overflow: hidden;
+}
+
+.figma-report-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: black;
+  margin: 0 0 6px 0;
+  padding: 0 8px;
+  line-height: 1.2;
+}
+
+/* Table Container */
+.figma-table-container {
+  background: white;
+}
+
+.figma-table-header {
+  background: rgba(217, 217, 217, 0.41);
+  border: 1px solid #d9d9d9;
+  border-radius: 5px;
+  margin: 0 8px;
+  padding: 8px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.figma-table-header-text {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #565656;
+}
+
+/* Table Body */
+.figma-table-body {
+  padding: 0 8px;
+}
+
+.figma-table-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-bottom: 1px solid #e0e0e0;
+  transition: background 0.2s ease;
+  cursor: pointer;
+}
+
+.figma-table-row:last-child {
+  border-bottom: none;
+}
+
+.figma-table-row:hover {
+  background: rgba(33, 150, 243, 0.05);
+}
+
+.figma-student-name {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: black;
+}
+
+.figma-usage-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #00d084;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.figma-usage-indicator.low {
+  background: #00d084;
+}
+
+.figma-usage-indicator.medium {
+  background: #ffd600;
+}
+
+.figma-usage-indicator.high {
+  background: #ff4444;
+}
+
+/* See More Button */
+.figma-see-more-btn {
+  display: block;
+  margin: 10px auto;
+  background: rgba(217, 217, 217, 0.49);
+  border: 1px solid #d9d9d9;
+  border-radius: 5px;
+  padding: 6px 20px;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  color: black;
+  cursor: pointer;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease;
+}
+
+.figma-see-more-btn:hover {
+  background: rgba(217, 217, 217, 0.7);
+  transform: translateY(-1px);
+}
+
+/* Statistics Card */
+.figma-stats-card {
+  position: relative;
+  margin: 12px auto 0 auto;
+  width: 239px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.figma-stat-item {
+  text-align: center;
+  width: 100%;
+}
+
+.figma-stat-number {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 48px;
+  font-weight: 400;
+  color: black;
+  line-height: 1;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.figma-stat-label {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: black;
+  display: block;
+}
+
+/* Disclaimer */
+.figma-disclaimer {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Bricolage Grotesque', 'Noto Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  color: black;
+  text-align: center;
+  margin: 0;
+  padding: 0 35px;
+  line-height: 1.2;
+  z-index: 10;
+}
+
+/* Insights Content */
+.figma-insights-content {
+  position: relative;
+  z-index: 5;
+  padding: 20px 27px;
+  max-height: 530px;
+  overflow-y: auto;
+}
+
+.figma-insights-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.figma-insights-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.figma-insights-content::-webkit-scrollbar-thumb {
+  background: #2196F3;
+  border-radius: 3px;
+}
+
+.figma-section-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: black;
+  margin: 0 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #2196F3;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+  .figma-dashboard-container {
+    width: 100%;
+    height: 100vh;
+  }
+  
+  .figma-report-card {
+    margin: 20px 20px 0 20px;
+  }
+  
+  .figma-stats-card {
+    width: calc(100% - 54px);
+  }
+}
+
+/* Animation for smooth transitions */
+.figma-view {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

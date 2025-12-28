@@ -13,8 +13,12 @@
     "http://localhost:3000/*",
     "https://drive.google.com/*",
     "https://docs.google.com/*",
-    "https://*.googleusercontent.com/*"
+    "https://*.googleusercontent.com/*",
+    "https://www.figma.com/*"
   ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; img-src 'self' data: https://www.figma.com https://*.figma.com;"
+  },
   "background": {
     "service_worker": "background.js"
   },
